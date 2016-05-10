@@ -8,7 +8,7 @@ public class Braille {
     private final int ASCII_A = 65;
     private final int ASCII_Z = 90;
     private final int ASCII_a = 97;
-    private final int ASCII_z = 112;
+    private final int ASCII_z = 122;
 
     private final int ASCII_space = 32;
     private final int ASCII_exclamation = 33;
@@ -81,10 +81,12 @@ public class Braille {
 
         for (int i=0; i<length; i++) {
             int ascii = (int)(s.charAt(i));
+            Log.d("Braille",Integer.toString(ascii));
 
             if (ascii >= ASCII_A && ascii <= ASCII_Z) {                                             // 대문자
                 if (number_reading == true) data = data.concat(BrailleData_space); // 숫자가 끝남
                 int index = ascii - ASCII_A;
+                Log.d("Braille","index: "+Integer.toString(index));
                 data = data.concat(BrailleData_capital);
                 data = data.concat(BrailleData_alphabet[index]);
                 number_reading = false;
@@ -93,6 +95,7 @@ public class Braille {
             else if (ascii >= ASCII_a && ascii <= ASCII_z) {                                        // 소문자
                 if (number_reading == true) data = data.concat(BrailleData_space); // 숫자가 끝남
                 int index = ascii - ASCII_a;
+                Log.d("Braille","index: "+Integer.toString(index));
                 data = data.concat(BrailleData_alphabet[index]);
                 number_reading = false;
             }
@@ -116,8 +119,8 @@ public class Braille {
                 number_reading = false;
             }
             else if (ascii==ASCII_doublequote) {                                                   // 쌍따옴표
-                if (doublequote_using) data = data.concat(BrailleData_opendoublequote);
-                else data = data.concat(BrailleData_closedoublequote);
+                if (doublequote_using) data = data.concat(BrailleData_closedoublequote);
+                else data = data.concat(BrailleData_opendoublequote);
                 doublequote_using = !doublequote_using;
                 number_reading = false;
             }
