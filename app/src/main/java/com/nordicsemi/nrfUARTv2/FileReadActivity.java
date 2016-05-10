@@ -135,7 +135,7 @@ public class FileReadActivity extends Activity {
 
             //Update the log with time stamp
             String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-            listAdapter.add("[" + currentDateTimeString + "] TX: " + origin + " " + str);
+            listAdapter.add("[" + currentDateTimeString + "] TX: " + origin + " " + braille.getString());
             messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
 
         } catch (UnsupportedEncodingException e) {
