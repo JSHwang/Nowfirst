@@ -56,11 +56,13 @@ public class Braille {
     private final static String BrailleData_question = "001011"; // 물음표
 
     String data;                              // 점자 데이터
+    String bytedata;                         // byte string으로 변환
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Braille(){
         data = "";
+        bytedata = "";
     }
 
     Braille(String s) {                       // constructor
@@ -69,11 +71,11 @@ public class Braille {
 
     String toBraille(String s) {
         makeBraille(s);
-        return data;
+        return bytedata;
     }
 
     private void makeBraille (String s) {
-        data=""; // initialize
+        data=""; bytedata=""; // initialize
         int length = s.length();
         boolean number_reading = false; // 지금 숫자를 읽는 중
         boolean doublequote_using = false; // 지금 쌍따옴표 사용 중
@@ -162,9 +164,28 @@ public class Braille {
                 number_reading = false;
             }
         }
+
+        Log.d("Braille", "data: "+data);
+
+        length = data.length();
+        byte temp;
+        for (int i=0; i < (length/6); i++) {
+            int j;
+            temp = 0;
+            for (j=0; j<6; j++) {
+                temp <<= 1;
+                if (data.charAt(i*6+j) == '1') temp++;
+                Log.d("Braille", "temp: "+temp);
+            }
+            char chtem = (char)temp;
+            Log.d("Braille", "chtem: "+chtem);
+            bytedata = bytedata.concat(Character.toString(chtem));
+        }
+        Log.d("Braille", "bytedata: "+bytedata);
     }
 
     public String getString() {              // 점자 데이터를 binary string으로 변환
         return data;
     }
+    public String getByteString() { return bytedata; }
 }
