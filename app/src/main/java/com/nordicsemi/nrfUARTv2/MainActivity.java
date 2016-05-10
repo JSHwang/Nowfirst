@@ -33,6 +33,7 @@ import java.util.Date;
 
 import com.nordicsemi.nrfUARTv2.UartService;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -46,14 +47,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -75,34 +81,51 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
     private static final int UART_PROFILE_CONNECTED = 20;
     private static final int UART_PROFILE_DISCONNECTED = 21;
     private static final int STATE_OFF = 10;
+    static final int MY_PERMISSIONS_REQUEST_READ_EXTERN_STORAGE = 1;
+
 
     TextView mRemoteRssiVal;
     RadioGroup mRg;
     private int mState = UART_PROFILE_DISCONNECTED;
-    private UartService mService = null;
+    public static UartService mService = null;
     private BluetoothDevice mDevice = null;
     private BluetoothAdapter mBtAdapter = null;
-    private ListView messageListView;
-    private ArrayAdapter<String> listAdapter;
-    private Button btnConnectDisconnect,btnSend;
-    private EditText edtMessage;
+//    private ListView messageListView;
+//    private ArrayAdapter<String> listAdapter;
+//    private Button btnConnectDisconnect,btnSend;
+//    private EditText edtMessage;
+    private Button btnConnectDisconnect;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        Log.d("MainActivity", isExternalStorageWritable() + "");
+        Log.d("MainActivity", isExternalStorageReadable() + "");
+
+        //블루투스 통신이 가능한 device인지 확인
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBtAdapter == null) {
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
-        messageListView = (ListView) findViewById(R.id.listMessage);
-        listAdapter = new ArrayAdapter<String>(this, R.layout.message_detail);
-        messageListView.setAdapter(listAdapter);
-        messageListView.setDivider(null);
+
+
+
+            //통신 확인 view
+//        messageListView = (ListView) findViewById(R.id.listMessage);
+//        listAdapter = new ArrayAdapter<String>(this, R.layout.message_detail);
+//        messageListView.setAdapter(listAdapter);
+//        messageListView.setDivider(null);
+//        btnSend=(Button) findViewById(R.id.sendButton);
+//        edtMessage = (EditText) findViewById(R.id.sendText);
+
+
+        //연결 버튼
         btnConnectDisconnect=(Button) findViewById(R.id.btn_select);
-        btnSend=(Button) findViewById(R.id.sendButton);
-        edtMessage = (EditText) findViewById(R.id.sendText);
+
+        //백그라운드 서비스 초기화
         service_init();
 
      
@@ -111,6 +134,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
         btnConnectDisconnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //블루투스가 안켜져 있으면 킴
                 if (!mBtAdapter.isEnabled()) {
                     Log.i(TAG, "onClick - BT not enabled yet");
                     Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -134,30 +158,32 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                 }
             }
         });
-        // Handle Send button
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            	EditText editText = (EditText) findViewById(R.id.sendText);
-                Braille braille = new Braille(editText.getText().toString());
-            	String message = braille.getString();
-            	byte[] value;
-				try {
-					//send data to service
-					value = message.getBytes("UTF-8");
-					mService.writeRXCharacteristic(value);
-					//Update the log with time stamp
-					String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-					listAdapter.add("["+currentDateTimeString+"] TX: "+ message);
-               	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-               	 	edtMessage.setText("");
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-                
-            }
-        });
+
+
+//        // Handle Send button
+//        btnSend.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            	EditText editText = (EditText) findViewById(R.id.sendText);
+//                Braille braille = new Braille(editText.getText().toString());
+//            	String message = braille.getString();
+//            	byte[] value;
+//				try {
+//					//send data to service
+//					value = message.getBytes("UTF-8");
+//					mService.writeRXCharacteristic(value);
+//					//Update the log with time stamp
+//					String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+//					listAdapter.add("["+currentDateTimeString+"] TX: "+ message);
+//               	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+//               	 	edtMessage.setText("");
+//				} catch (UnsupportedEncodingException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//
+//            }
+//        });
      
         // Set initial UI state
         
@@ -200,15 +226,17 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
             if (action.equals(UartService.ACTION_GATT_CONNECTED)) {
             	 runOnUiThread(new Runnable() {
                      public void run() {
-                         	String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-                             Log.d(TAG, "UART_CONNECT_MSG");
-                             btnConnectDisconnect.setText("Disconnect");
-                             edtMessage.setEnabled(true);
-                             btnSend.setEnabled(true);
-                             ((TextView) findViewById(R.id.deviceName)).setText(mDevice.getName()+ " - ready");
-                             listAdapter.add("["+currentDateTimeString+"] Connected to: "+ mDevice.getName());
-                        	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-                             mState = UART_PROFILE_CONNECTED;
+                        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                         Log.d(TAG, "UART_CONNECT_MSG");
+                         btnConnectDisconnect.setText("Disconnect");
+//                             edtMessage.setEnabled(true);
+//                             btnSend.setEnabled(true);
+                         ((TextView) findViewById(R.id.deviceName)).setText(mDevice.getName()+ " - ready");
+//                             listAdapter.add("["+currentDateTimeString+"] Connected to: "+ mDevice.getName());
+//                        	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+                         mState = UART_PROFILE_CONNECTED;
+                         startActivity(new Intent(MainActivity.this, FileListActivity.class));
+
                      }
             	 });
             }
@@ -220,10 +248,10 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                     	 	 String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
                              Log.d(TAG, "UART_DISCONNECT_MSG");
                              btnConnectDisconnect.setText("Connect");
-                             edtMessage.setEnabled(false);
-                             btnSend.setEnabled(false);
+//                             edtMessage.setEnabled(false);
+//                             btnSend.setEnabled(false);
                              ((TextView) findViewById(R.id.deviceName)).setText("Not Connected");
-                             listAdapter.add("["+currentDateTimeString+"] Disconnected to: "+ mDevice.getName());
+//                             listAdapter.add("["+currentDateTimeString+"] Disconnected to: "+ mDevice.getName());
                              mState = UART_PROFILE_DISCONNECTED;
                              mService.close();
                             //setUiState();
@@ -246,8 +274,8 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                          try {
                          	String text = new String(txValue, "UTF-8");
                          	String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-                        	 	listAdapter.add("["+currentDateTimeString+"] RX: "+text);
-                        	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+//                        	 	listAdapter.add("["+currentDateTimeString+"] RX: "+text);
+//                        	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
                         	
                          } catch (Exception e) {
                              Log.e(TAG, e.toString());
@@ -271,6 +299,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
   
         LocalBroadcastManager.getInstance(this).registerReceiver(UARTStatusChangeReceiver, makeGattUpdateIntentFilter());
     }
+
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UartService.ACTION_GATT_CONNECTED);
@@ -280,6 +309,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
         intentFilter.addAction(UartService.DEVICE_DOES_NOT_SUPPORT_UART);
         return intentFilter;
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -406,5 +436,25 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
             .setNegativeButton(R.string.popup_no, null)
             .show();
         }
+    }
+
+
+    /* Checks if external storage is available for read and write */
+    boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    /* Checks if external storage is available to at least read */
+    boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
     }
 }
