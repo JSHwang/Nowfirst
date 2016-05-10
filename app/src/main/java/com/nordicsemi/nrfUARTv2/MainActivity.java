@@ -140,7 +140,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
             public void onClick(View v) {
             	EditText editText = (EditText) findViewById(R.id.sendText);
                 Braille braille = new Braille(editText.getText().toString());
-            	String message = braille.getString();
+            	String message = braille.getByteString();
             	byte[] value;
 				try {
 					//send data to service

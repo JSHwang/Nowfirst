@@ -39,6 +39,7 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
 
@@ -318,7 +319,7 @@ public class UartService extends Service {
             broadcastUpdate(DEVICE_DOES_NOT_SUPPORT_UART);
             return;
         }
-        mBluetoothGatt.setCharacteristicNotification(TxChar,true);
+        mBluetoothGatt.setCharacteristicNotification(TxChar, true);
         
         BluetoothGattDescriptor descriptor = TxChar.getDescriptor(CCCD);
         descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -328,8 +329,6 @@ public class UartService extends Service {
     
     public void writeRXCharacteristic(byte[] value)
     {
-    
-    	
     	BluetoothGattService RxService = mBluetoothGatt.getService(RX_SERVICE_UUID);
     	showMessage("mBluetoothGatt null"+ mBluetoothGatt);
     	if (RxService == null) {
@@ -344,6 +343,11 @@ public class UartService extends Service {
             return;
         }
         RxChar.setValue(value);
+        try {
+            Log.d("MessageSend", "RxChar value: " + RxChar.getValue().toString() + " / " + new String(value, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     	boolean status = mBluetoothGatt.writeCharacteristic(RxChar);
     	
         Log.d(TAG, "write TXchar - status=" + status);  
