@@ -105,7 +105,8 @@ public class FileListActivity extends FragmentActivity implements OnInitListener
             File files = new File(path);
             for(File file : files.listFiles())
             {
-                mFileNames.add(file.getName().replace(".txt",""));
+                mFileNames.add(file.getName());
+//                mFileNames.add(file.getName().replace(".txt",""));
             }
         }
 

@@ -50,6 +50,7 @@ public class PageFragment extends Fragment {
         ((RoundCornerProgressBar) rootView.findViewById(R.id.progress)).setProgress(mProgress);
 
         mButton = ((FancyButton) rootView.findViewById(R.id.title));
+        mButton.setText(mTitle.replace(".txt", ""));
         mButton.setBackgroundColor(Color.parseColor(mColor));
 
         mButton.setOnClickListener(new View.OnClickListener() {
