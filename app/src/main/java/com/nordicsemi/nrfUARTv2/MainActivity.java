@@ -44,6 +44,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.media.Ringtone;
@@ -55,6 +56,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -95,13 +97,36 @@ public class MainActivity extends Activity {
 //    private Button btnConnectDisconnect,btnSend;
 //    private EditText edtMessage;
     private FancyButton btnConnectDisconnect;
+
+    private FancyButton BtnSilence;
+
+    // key numbers for save/load global data
+    final static String KEY_SILENCE = "1";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        // global data 불러오기
+        if (savedInstanceState != null) {
+            Log.d("data", "loading...");
+            GlobalData.setStringSilence(savedInstanceState.getString(KEY_SILENCE));
+        }
+        //GlobalData.setStringSilence(getPreferences(Context.MODE_PRIVATE).getString(KEY_SILENCE,null));
+        Log.d("MainActivity", "Silence: " + GlobalData.getStringSilence());
+
         Log.d("MainActivity", isExternalStorageWritable() + "");
         Log.d("MainActivity", isExternalStorageReadable() + "");
+
+        BtnSilence = (FancyButton)findViewById(R.id.btn_silence);
+        BtnSilence.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GlobalData.switchSilence();
+                Log.d("MainActivity", "Silence: "+ GlobalData.getStringSilence());
+            }
+        });
 
         //블루투스 통신이 가능한 device인지 확인
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -363,9 +388,23 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Log.d("data", "saving...");
+        outState.putString(KEY_SILENCE, GlobalData.getStringSilence());
+    }
+
+    @Override
     protected void onStop() {
         Log.d(TAG, "onStop");
         super.onStop();
+
+        SharedPreferences.Editor SPEditor = getPreferences(Context.MODE_PRIVATE).edit();
+
+        SPEditor.putString(KEY_SILENCE, GlobalData.getStringSilence());
+
+        SPEditor.commit();
     }
 
     @Override

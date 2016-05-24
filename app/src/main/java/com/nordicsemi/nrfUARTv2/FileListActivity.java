@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -27,12 +29,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileListActivity extends FragmentActivity {
+public class FileListActivity extends FragmentActivity implements OnInitListener {
 
     static String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/myEbook/";
+    TextToSpeech TTS;
 
 //    private List<String> mFileNames = new ArrayList<String>();
     ViewPager mFileListView;
+    ArrayList<String> fileNameList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,16 @@ public class FileListActivity extends FragmentActivity {
         Adapter adapter = new Adapter(getSupportFragmentManager());
         adapter.setItems();
         mFileListView.setAdapter(adapter);
+
+        fileNameList = new ArrayList<String>();
+        TTS = new TextToSpeech(this,this);
+
+        int length = adapter.getCount();
+        for (int i=0; i<length; i++) {
+            fileNameList.add(adapter.getFileName(i));
+        }
+
+        if (!(GlobalData.getSilence())) TTS.speak(fileNameList.get(0), TextToSpeech.QUEUE_FLUSH, null);
 
 //
 //        mFileListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -55,6 +69,27 @@ public class FileListActivity extends FragmentActivity {
 //
 //
 //        this.updateFileList();
+
+        mFileListView.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                if (!(GlobalData.getSilence())) {
+                    String fileName = fileNameList.get(position);
+                    TTS.speak(fileName, TextToSpeech.QUEUE_FLUSH, null);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+
+    }
+
+    @Override
+    public void onInit(int status) {
 
     }
 
@@ -70,7 +105,7 @@ public class FileListActivity extends FragmentActivity {
             File files = new File(path);
             for(File file : files.listFiles())
             {
-                mFileNames.add(file.getName());
+                mFileNames.add(file.getName().replace(".txt",""));
             }
         }
 
@@ -82,6 +117,10 @@ public class FileListActivity extends FragmentActivity {
         @Override
         public int getCount() {
             return mFileNames.size();
+        }
+
+        public String getFileName(int position) {
+            return mFileNames.get(position);
         }
 
     }
@@ -125,6 +164,10 @@ public class FileListActivity extends FragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        TTS.shutdown();
+    }
 
 }
