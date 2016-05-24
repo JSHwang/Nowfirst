@@ -24,31 +24,34 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#666" >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:id="@+id/empty_layout">
 
         <TextView
-            android:id="@+id/title_devices"
+            android:id="@+id/empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:paddingLeft="12dp"
-            android:paddingRight="50dp"
-            android:text="@string/select_device"
-            android:textColor="#fff"
-            android:textSize="15dip" />
+            android:text="@string/scanning"
+            android:textSize="30dp" />
 
-        <ImageView
-            android:id="@+id/about"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:src="@android:drawable/ic_menu_info_details" />
+        <!--<TextView-->
+            <!--android:id="@+id/title_devices"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:paddingLeft="12dp"-->
+            <!--android:paddingRight="50dp"-->
+            <!--android:text="@string/select_device"-->
+            <!--android:textColor="#fff"-->
+            <!--android:textSize="15dip" />-->
+
     </RelativeLayout>
     <LinearLayout android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -56,20 +59,32 @@
         <ListView
             android:id="@+id/new_devices"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="2"
+            android:layout_height="250dp"
             android:stackFromBottom="true" />
 
-        <TextView
-            android:id="@+id/empty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/scanning" />
-
-        <Button
+        <mehdi.sakout.fancybuttons.FancyButton
             android:id="@+id/btn_cancel"
-            android:layout_width="match_parent"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
-            android:text="@android:string/cancel" />
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            fancy:fb_borderColor="#FFFFFF"
+            fancy:fb_borderWidth="1dp"
+            fancy:fb_defaultColor="#af0029"
+            fancy:fb_focusColor="#d6112f"
+            fancy:fb_radius="30dp"
+            fancy:fb_text="Cancel"
+            fancy:fb_textColor="#FFFFFF"
+            fancy:fb_textSize="30dp"
+            android:onClick="myOnClick"
+            android:layout_margin="10dp"
+            android:layout_gravity="center" />
+        <!--<Button-->
+            <!--android:id="@+id/btn_cancel"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@android:string/cancel" />-->
     </LinearLayout>
 </LinearLayout>
