@@ -118,6 +118,34 @@ public class MainActivity extends Activity {
 
         Log.d("MainActivity", isExternalStorageWritable() + "");
         Log.d("MainActivity", isExternalStorageReadable() + "");
+        btnConnectDisconnect=(FancyButton) findViewById(R.id.btn_select);
+        btnConnectDisconnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //블루투스가 안켜져 있으면 킴
+                if (!mBtAdapter.isEnabled()) {
+                    Log.i(TAG, "onClick - BT not enabled yet");
+                    Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+                }
+                else {
+                    if (btnConnectDisconnect.getText().equals("Connect")){
+
+                        //Connect button pressed, open DeviceListActivity class, with popup windows that scan for devices
+
+                        Intent newIntent = new Intent(MainActivity.this, DeviceListActivity.class);
+                        startActivityForResult(newIntent, REQUEST_SELECT_DEVICE);
+                    } else {
+                        //Disconnect button pressed
+                        if (mDevice!=null)
+                        {
+                            mService.disconnect();
+
+                        }
+                    }
+                }
+            }
+        });
 
         BtnSilence = (FancyButton)findViewById(R.id.btn_silence);
         BtnSilence.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +176,6 @@ public class MainActivity extends Activity {
 
 
         //연결 버튼
-        btnConnectDisconnect=(FancyButton) findViewById(R.id.btn_select);
 
         //백그라운드 서비스 초기화
         service_init();
@@ -213,39 +240,39 @@ public class MainActivity extends Activity {
         // Set initial UI state
         
     }
-
-    public void myOnClick(View v){
-        switch (v.getId()) {
-            case R.id.btn_select:
-                //블루투스가 안켜져 있으면 킴
-                if (!mBtAdapter.isEnabled()) {
-                    Log.i(TAG, "onClick - BT not enabled yet");
-                    Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-                }
-                else {
-                    if (btnConnectDisconnect.getText().equals("Connect")){
-
-                        //Connect button pressed, open DeviceListActivity class, with popup windows that scan for devices
-
-                        Intent newIntent = new Intent(MainActivity.this, DeviceListActivity.class);
-                        startActivityForResult(newIntent, REQUEST_SELECT_DEVICE);
-                    } else {
-                        //Disconnect button pressed
-                        if (mDevice!=null)
-                        {
-                            mService.disconnect();
-
-                        }
-                    }
-                }
-
-
-                break;
-
-        }
-
-    }
+//
+//    public void myOnClick(View v){
+//        switch (v.getId()) {
+//            case R.id.btn_select:
+//                //블루투스가 안켜져 있으면 킴
+//                if (!mBtAdapter.isEnabled()) {
+//                    Log.i(TAG, "onClick - BT not enabled yet");
+//                    Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                    startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+//                }
+//                else {
+//                    if (btnConnectDisconnect.getText().equals("Connect")){
+//
+//                        //Connect button pressed, open DeviceListActivity class, with popup windows that scan for devices
+//
+//                        Intent newIntent = new Intent(MainActivity.this, DeviceListActivity.class);
+//                        startActivityForResult(newIntent, REQUEST_SELECT_DEVICE);
+//                    } else {
+//                        //Disconnect button pressed
+//                        if (mDevice!=null)
+//                        {
+//                            mService.disconnect();
+//
+//                        }
+//                    }
+//                }
+//
+//
+//                break;
+//
+//        }
+//
+//    }
 
     //UART service connected/disconnected
     private ServiceConnection mServiceConnection = new ServiceConnection() {
