@@ -60,6 +60,7 @@ public class FileListActivity extends FragmentActivity {
 
     static class Adapter extends FragmentPagerAdapter {
         private final List<String> mFileNames = new ArrayList<String>();
+        private String[] colors = {"#b80027", "#0093b8", "#e36000", "#00b84e", "#e1de00"};
 
         public Adapter(FragmentManager fm) {
             super(fm);
@@ -75,7 +76,7 @@ public class FileListActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return PageFragment.create(mFileNames.get(position), 30);
+            return PageFragment.create(mFileNames.get(position), 30, colors[position%5]);
         }
 
         @Override

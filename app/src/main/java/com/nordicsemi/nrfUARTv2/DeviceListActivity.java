@@ -71,14 +71,12 @@ public class DeviceListActivity extends Activity {
     public static final String TAG = "DeviceListActivity";
 
     List<BluetoothDevice> deviceList;
-    private DeviceAdapter deviceAdapter;
+//    private DeviceAdapter deviceAdapter;
     private ServiceConnection onService = null;
     Map<String, Integer> devRssiValues;
     private static final long SCAN_PERIOD = 10000; //scanning for 10 seconds
     private Handler mHandler;
     private boolean mScanning;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +108,12 @@ public class DeviceListActivity extends Activity {
             finish();
             return;
         }
-        populateList();
+        deviceList = new ArrayList<BluetoothDevice>();
+        devRssiValues = new HashMap<String, Integer>();
+
+        scanLeDevice(true);
+
+//        populateList();
         mEmptyList = (RelativeLayout) findViewById(R.id.empty_layout);
         FancyButton cancelButton = (FancyButton) findViewById(R.id.btn_cancel);
         cancelButton.setOnClickListener(new OnClickListener() {
@@ -123,21 +126,21 @@ public class DeviceListActivity extends Activity {
         });
 
     }
-
-    private void populateList() {
-        /* Initialize device list container */
-        Log.d(TAG, "populateList");
-        deviceList = new ArrayList<BluetoothDevice>();
-        deviceAdapter = new DeviceAdapter(this, deviceList);
-        devRssiValues = new HashMap<String, Integer>();
-
-        ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
-        newDevicesListView.setAdapter(deviceAdapter);
-        newDevicesListView.setOnItemClickListener(mDeviceClickListener);
-
-           scanLeDevice(true);
-
-    }
+//
+//    private void populateList() {
+//        /* Initialize device list container */
+//        Log.d(TAG, "populateList");
+//        deviceList = new ArrayList<BluetoothDevice>();
+//        deviceAdapter = new DeviceAdapter(this, deviceList);
+//        devRssiValues = new HashMap<String, Integer>();
+//
+//        ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
+//        newDevicesListView.setAdapter(deviceAdapter);
+//        newDevicesListView.setOnItemClickListener(mDeviceClickListener);
+//
+//           scanLeDevice(true);
+//
+//    }
 
     private void scanLeDevice(final boolean enable) {
         final FancyButton cancelButton = (FancyButton) findViewById(R.id.btn_cancel);
@@ -171,14 +174,12 @@ public class DeviceListActivity extends Activity {
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
-
         @Override
         public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
-                              addDevice(device,rssi);
+                    addDevice(device,rssi);
                 }
             });
         }
@@ -194,16 +195,26 @@ public class DeviceListActivity extends Activity {
             }
         }
 
-
         devRssiValues.put(device.getAddress(), rssi);
+
         if (!deviceFound) {
+
+            Log.d("Now_First", "name : " + device.getName());
+
+            if(device.getName() != null && device.getName().compareTo("Kocoa_BLE") == 0){
+                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                Bundle b = new Bundle();
+                b.putString(BluetoothDevice.EXTRA_DEVICE, device.getAddress());
+                Intent result = new Intent();
+                result.putExtras(b);
+                setResult(Activity.RESULT_OK, result);
+                finish();
+
+            }
         	deviceList.add(device);
             mEmptyList.setVisibility(View.GONE);
 
-
-
-
-            deviceAdapter.notifyDataSetChanged();
+//            deviceAdapter.notifyDataSetChanged();
         }
     }
 

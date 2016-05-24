@@ -1,6 +1,7 @@
 package com.nordicsemi.nrfUARTv2;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -20,12 +21,15 @@ public class PageFragment extends Fragment {
     private String mTitle;
     private int mProgress;
     private FancyButton mButton;
+    private String mColor;
 
-    public static PageFragment create(String title, int progress) {
+    public static PageFragment create(String title, int progress, String color) {
         PageFragment fragment = new PageFragment();
         Bundle args = new Bundle();
         args.putString("Title", title);
         args.putInt("Progress", progress);
+        args.putString("Color", color);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -35,6 +39,7 @@ public class PageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mTitle = getArguments().getString("Title");
         mProgress = getArguments().getInt("Progress");
+        mColor = getArguments().getString("Color");
     }
 
     @Override
@@ -42,8 +47,10 @@ public class PageFragment extends Fragment {
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.file_list_item, container, false);
         ((FancyButton) rootView.findViewById(R.id.title)).setText(mTitle);
-        ((RoundCornerProgressBar) rootView.findViewById(R.id.progress)).setProgress(60);
+        ((RoundCornerProgressBar) rootView.findViewById(R.id.progress)).setProgress(mProgress);
+
         mButton = ((FancyButton) rootView.findViewById(R.id.title));
+        mButton.setBackgroundColor(Color.parseColor(mColor));
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
