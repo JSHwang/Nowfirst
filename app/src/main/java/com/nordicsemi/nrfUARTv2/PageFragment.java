@@ -46,7 +46,7 @@ public class PageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.file_list_item, container, false);
-        ((FancyButton) rootView.findViewById(R.id.title)).setText(mTitle);
+//        ((FancyButton) rootView.findViewById(R.id.title)).setText(mTitle);
         ((RoundCornerProgressBar) rootView.findViewById(R.id.progress)).setProgress(mProgress);
 
         mButton = ((FancyButton) rootView.findViewById(R.id.title));

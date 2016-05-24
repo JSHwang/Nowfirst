@@ -47,6 +47,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -152,6 +153,17 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 GlobalData.switchSilence();
+                if(GlobalData.getSilence()){
+                    //무음
+                    BtnSilence.setIconResource("\uf028");
+                    BtnSilence.setBackgroundColor(Color.parseColor("#af0029"));
+                    BtnSilence.setFocusBackgroundColor(Color.parseColor("#d6112f"));
+
+                }else{
+                    BtnSilence.setIconResource("\uf026");
+                    BtnSilence.setBackgroundColor(Color.parseColor("#0093b8"));
+                    BtnSilence.setFocusBackgroundColor(Color.parseColor("#02aed9"));
+                }
                 Log.d("MainActivity", "Silence: "+ GlobalData.getStringSilence());
             }
         });

@@ -78,7 +78,7 @@ public class FileListActivity extends FragmentActivity implements OnInitListener
             public void onPageSelected(int position) {
                 if (!(GlobalData.getSilence())) {
                     String fileName = fileNameList.get(position);
-                    TTS.speak(fileName, TextToSpeech.QUEUE_FLUSH, null);
+                    TTS.speak(fileName.replace("txt", ""), TextToSpeech.QUEUE_FLUSH, null);
                 }
             }
 
