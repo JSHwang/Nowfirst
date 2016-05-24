@@ -34,6 +34,7 @@ public class Braille {
             "110111", /*y*/ "100111"  /*z*/
     };
     private final static String BrailleData_capital = "000001"; // 대문자
+    private final static String BrailleData_doublecapital = "000001000001"; // 겹대문자
 
     private final static String[] BrailleData_number = { // 숫자
             "011100", /*0*/ "100000", /*1*/ "101000", /*2*/ "110000", /*3*/
@@ -78,6 +79,7 @@ public class Braille {
         data=""; bytedata=""; // initialize
         int length = s.length();
         boolean number_reading = false; // 지금 숫자를 읽는 중
+        boolean capital_continue = false; // 지금 대문자가 연속으로 등장하는 중
         boolean doublequote_using = false; // 지금 쌍따옴표 사용 중
         boolean singlequote_using = false; // 지금 따옴표 사용 중
 
@@ -89,7 +91,19 @@ public class Braille {
                 if (number_reading == true) data = data.concat(BrailleData_space); // 숫자가 끝남
                 int index = ascii - ASCII_A;
                 Log.d("Braille","index: "+Integer.toString(index));
-                data = data.concat(BrailleData_capital);
+
+                int next; // 다음 글자
+                if (i+1<length) next = (int)(s.charAt(i+1));
+                else next = -1;
+                if (!capital_continue && (next<ASCII_A || next>ASCII_Z)) { // 겹대문자 아님
+                    data = data.concat(BrailleData_capital);
+                    capital_continue = false;
+                } else if (!capital_continue) { // 겹대문자 시작, 처음 글자
+                    data = data.concat(BrailleData_doublecapital);
+                    capital_continue = true;
+                } else if (next<ASCII_A || next>ASCII_Z) { // 겹대문자 끝
+                    capital_continue = false;
+                }
                 data = data.concat(BrailleData_alphabet[index]);
                 number_reading = false;
             }
@@ -100,6 +114,7 @@ public class Braille {
                 Log.d("Braille","index: "+Integer.toString(index));
                 data = data.concat(BrailleData_alphabet[index]);
                 number_reading = false;
+                capital_continue = false;
             }
 
             else if (ascii >= ASCII_0 && ascii <= ASCII_9) {                                        // 숫자
@@ -110,58 +125,71 @@ public class Braille {
                 int index = ascii - ASCII_0;
                 data = data.concat(BrailleData_number[index]);
                 number_reading = true;
+                capital_continue = false;
             }
 
             else if (ascii==ASCII_space) {                                                          // 스페이스
                 data = data.concat(BrailleData_space);
                 number_reading = false;
+                capital_continue = false;
             }
             else if (ascii==ASCII_exclamation) {                                                   // 느낌표
                 data = data.concat(BrailleData_exclamation);
                 number_reading = false;
+                capital_continue = false;
             }
             else if (ascii==ASCII_doublequote) {                                                   // 쌍따옴표
                 if (doublequote_using) data = data.concat(BrailleData_closedoublequote);
                 else data = data.concat(BrailleData_opendoublequote);
                 doublequote_using = !doublequote_using;
                 number_reading = false;
+                capital_continue = false;
             }
             else if (ascii == ASCII_apostrophe) {                                                  // 어포스트로피
                 data = data.concat(BrailleData_apostrophe);
                 number_reading = false;
+                capital_continue = false;
             }
             else if (ascii == ASCII_openparenthesis || ascii == ASCII_closeparenthesis) {       // 괄호
                 data = data.concat(BrailleData_parenthesis);
                 number_reading = false;
+                capital_continue = false;
             }
             else if (ascii == ASCII_comma) {                                                        // 쉼표
                 data = data.concat(BrailleData_comma);
                 number_reading = false;
+                capital_continue = false;
             }
             else if (ascii == ASCII_hyphen) {                                                       // 하이픈
                 data = data.concat(BrailleData_hyphen);
                 number_reading = false;
+                capital_continue = false;
             }
             else if (ascii == ASCII_period) {                                                       // 마침표
                 data = data.concat(BrailleData_period);
                 number_reading = false;
+                capital_continue = false;
             }
             else if (ascii == ASCII_colon) {                                                        // 콜론
                 data = data.concat(BrailleData_colon);
                 number_reading = false;
+                capital_continue = false;
             }
             else if (ascii == ASCII_semicolon) {                                                    // 세미콜론
                 data = data.concat(BrailleData_semicolon);
                 number_reading = false;
+                capital_continue = false;
             }
             else if (ascii == ASCII_question) {                                                     // 물음표
                 data = data.concat(BrailleData_question);
                 number_reading = false;
+                capital_continue = false;
             }
 
             else {                                                                                    // 데이터 없음 -> space로 대체
                 data = data.concat(BrailleData_space);
                 number_reading = false;
+                capital_continue = false;
             }
         }
 
