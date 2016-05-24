@@ -55,7 +55,7 @@ public class FileListActivity extends FragmentActivity implements OnInitListener
             fileNameList.add(adapter.getFileName(i));
         }
 
-        TTS.speak(fileNameList.get(0), TextToSpeech.QUEUE_FLUSH, null);
+        if (!(GlobalData.getSilence())) TTS.speak(fileNameList.get(0), TextToSpeech.QUEUE_FLUSH, null);
 
 //
 //        mFileListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -76,8 +76,10 @@ public class FileListActivity extends FragmentActivity implements OnInitListener
 
             @Override
             public void onPageSelected(int position) {
-                String fileName = fileNameList.get(position);
-                TTS.speak(fileName, TextToSpeech.QUEUE_FLUSH, null);
+                if (!(GlobalData.getSilence())) {
+                    String fileName = fileNameList.get(position);
+                    TTS.speak(fileName, TextToSpeech.QUEUE_FLUSH, null);
+                }
             }
 
             @Override
