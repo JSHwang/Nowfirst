@@ -20,14 +20,15 @@ import java.util.Date;
 public class FileReadActivity extends Activity {
 
     static final int PREV = -1;
+    static final int INIT = 0;
     static final int NEXT = 1;
 
     String path;
 
-    Braille braille;
-    FilePointer fp;
-    private ListView messageListView;
-    private ArrayAdapter<String> listAdapter;
+    static Braille braille;
+    public static FilePointer fp;
+    private static ListView messageListView;
+    private static ArrayAdapter<String> listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,6 @@ public class FileReadActivity extends Activity {
             e.printStackTrace();
         }
     }
-
 
 
     public void myOnClick(View v) throws UnsupportedEncodingException {
@@ -120,8 +120,27 @@ public class FileReadActivity extends Activity {
 
     }
 
+    public static void setFilePointer(int sign){
+        String org = "";
+        String str = "";
 
-    private String sendText(String origin){
+        if(sign == INIT){
+            fp.initFilePointer();
+            sign = NEXT;
+        }
+        try {
+            org = fp.readFile(sign);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        str = sendText(org);
+
+        Log.d("MainActivity", str);
+        Log.d("MainActivity", fp.getNowStr());
+    }
+
+    private static String sendText(String origin){
 
         String str = "";
         byte[] value;

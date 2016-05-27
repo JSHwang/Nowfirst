@@ -201,7 +201,7 @@ public class DeviceListActivity extends Activity {
 
             Log.d("Now_First", "name : " + device.getName());
 
-            if(device.getName() != null && device.getName().compareTo("Kocoa_BLE") == 0){
+            if(device.getName() != null && device.getName().compareTo("KocaFab BLE") == 0){
                 mBluetoothAdapter.stopLeScan(mLeScanCallback);
                 Bundle b = new Bundle();
                 b.putString(BluetoothDevice.EXTRA_DEVICE, device.getAddress());

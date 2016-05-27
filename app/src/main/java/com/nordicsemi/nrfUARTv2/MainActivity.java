@@ -371,6 +371,11 @@ public class MainActivity extends Activity {
                          try {
                          	String text = new String(txValue, "UTF-8");
                          	String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                             text = text.replace("\n", "");
+                             Log.d("asd", "["+currentDateTimeString+"] RX: "+text);
+
+                             FileReadActivity.setFilePointer(Integer.parseInt(text)-1);
+                             Log.d("asd", "["+currentDateTimeString+"] RX: "+text);
 //                        	 	listAdapter.add("["+currentDateTimeString+"] RX: "+text);
 //                        	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
                         	
