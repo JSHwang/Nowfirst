@@ -90,8 +90,9 @@ public class Braille {
     }
 
     String prevBraille() {
-        if (current_index > 0) current_index--;
-        else current_index = 0;
+        if(current_index < 0)   return null;
+        else if (current_index > 0) current_index--;
+
         return read_list.get(current_index);
     }
 
@@ -100,6 +101,10 @@ public class Braille {
             current_index++;
             return read_list.get(current_index);
         } else return null;
+    }
+
+    void setCurrentIndexToZero(){
+        current_index = -1;
     }
 
     private void makeBraille (String s) {

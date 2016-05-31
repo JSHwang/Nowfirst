@@ -71,81 +71,105 @@ public class FileReadActivity extends Activity {
 
         switch (v.getId()) {
             case R.id.next:
-                try {
-                    org = fp.readFile(NEXT);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if((str = braille.nextBraille()) == null){
+                    try {
+                        org = fp.readFile(NEXT);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    str = braille.toBraille(org);
+                }else{
+                    fp.setNextNumRead();
                 }
-
-                str = sendText(org);
-
-                Log.d("MainActivity", str);
-                Log.d("MainActivity", fp.getNowStr());
-
                 break;
+
             case R.id.prev:
-
-                try {
-                    org = fp.readFile(PREV);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if((str = braille.prevBraille())==null){
+                    try {
+                        org
+                                = fp.readFile(PREV);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    str = braille.toBraille(org);
+                }else{
+                    fp.setPrevNumRead();
                 }
-
-                str = sendText(org);
-
-                Log.d("MainActivity", str);
-                Log.d("MainActivity", fp.getNowStr());
-
                 break;
             case R.id.init:
                 fp.initFilePointer();
-
+                braille.setCurrentIndexToZero();
                 try {
                     org = fp.readFile(NEXT);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                str = sendText(org);
-
-                Log.d("MainActivity", str);
-                Log.d("MainActivity", fp.getNowStr());
-
-
+                str = braille.toBraille(org);
                 break;
 
         }
+        str = sendText(str);
+        Log.d("FileReadActivity", org);
 
+        Log.d("FileReadActivity", str);
+        Log.d("FileReadActivity", fp.getNowStr());
     }
 
     public static void setFilePointer(int sign){
         String org = "";
         String str = "";
 
-        if(sign == INIT){
-            fp.initFilePointer();
-            sign = NEXT;
-        }
-        try {
-            org = fp.readFile(sign);
-        } catch (IOException e) {
-            e.printStackTrace();
+        switch (sign){
+            case INIT:
+                fp.initFilePointer();
+                braille.setCurrentIndexToZero();
+                sign = NEXT;
+                try {
+                    org = fp.readFile(sign);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                str = braille.toBraille(org);
+                break;
+            case PREV:
+                if((str = braille.prevBraille())==null){
+                    try {
+                        org = fp.readFile(sign);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    str = braille.toBraille(org);
+                }else{
+                    fp.setPrevNumRead();
+                }
+                break;
+            case NEXT:
+                if((str = braille.nextBraille()) == null){
+                    try {
+                        org = fp.readFile(sign);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    str = braille.toBraille(org);
+                }else{
+                    fp.setNextNumRead();
+                }
+                break;
         }
 
-        str = sendText(org);
+        str = sendText(str);
+        Log.d("FileReadActivity", sign + org);
 
-        Log.d("MainActivity", str);
-        Log.d("MainActivity", fp.getNowStr());
+        Log.d("FileReadActivity", str);
+        Log.d("FileReadActivity", fp.getNowStr());
     }
 
-    private static String sendText(String origin){
-
-        String str = "";
+    private static String sendText(String str){
         byte[] value;
 
 
         try {
-            str = braille.toBraille(origin);
+//            str = braille.toBraille(origin);
 
             //send data to service
             value = str.getBytes("UTF-8");
@@ -153,7 +177,7 @@ public class FileReadActivity extends Activity {
 
 //            //Update the log with time stamp
             String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-            listAdapter.add("[" + currentDateTimeString + "] TX: " + origin + " " + braille.getString());
+            listAdapter.add("[" + currentDateTimeString + "] TX: " + " " + str);
             messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
 
         } catch (UnsupportedEncodingException e) {

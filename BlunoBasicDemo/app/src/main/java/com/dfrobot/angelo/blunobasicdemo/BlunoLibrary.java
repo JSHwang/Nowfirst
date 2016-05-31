@@ -56,7 +56,7 @@ public abstract  class BlunoLibrary  extends Activity{
 	}
 	
 	private int mBaudrate=115200;	//set the default baud rate to 115200
-	private String mPassword="AT+PASSWOR=DFRobot\r\n";
+	private String mPassword="AT+PASSWORD=DFRobot\r\n";
 	
 	
 	private String mBaudrateBuffer = "AT+CURRUART="+mBaudrate+"\r\n";
@@ -442,8 +442,10 @@ public abstract  class BlunoLibrary  extends Activity{
 		public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
 			if (device == null)
 				return;
+			if(device.getName() == null)
+				return;
 
-			Log.d("scanning", device.getName());
+//			Log.d("scanning", device.getName());
 			if(device.getName().compareTo("NOW_FIRST") == 0){
 				scanLeDevice(false);
 

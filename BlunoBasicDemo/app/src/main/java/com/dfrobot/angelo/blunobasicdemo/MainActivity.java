@@ -197,6 +197,8 @@ public class MainActivity  extends BlunoLibrary {
 		// TODO Auto-generated method stub
 
 		Log.d("asd", "received : "+theString);
+		if(theString.length()>1) return;
+
 		FileReadActivity.setFilePointer(Integer.parseInt(theString)-1);
 
 //		serialReceivedText.append(theString);							//append the text into the EditText
