@@ -238,9 +238,8 @@ public class Braille {
             bytedata = bytedata.concat(Character.toString(chtem));
         }
         Log.d("Braille", "bytedata: "+bytedata);
-
-        read_list.add(bytedata);
         current_index++;
+        read_list.add(bytedata);
     } // makeBraille end
 
     public String getString() {              // 점자 데이터를 binary string으로 변환
