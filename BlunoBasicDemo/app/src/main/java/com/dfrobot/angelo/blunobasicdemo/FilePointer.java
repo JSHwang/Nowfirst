@@ -55,7 +55,11 @@ public class FilePointer {
 
     void setPrevNumRead(){
         now -= NUM_READ;
-        if(now < 0)     now = NUM_READ;
+        if(now <= 0)     now = NUM_READ;
+    }
+
+    void setInitNumRead(){
+        now = NUM_READ;
     }
 
 

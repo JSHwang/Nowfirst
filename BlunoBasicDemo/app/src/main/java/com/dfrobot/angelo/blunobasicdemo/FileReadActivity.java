@@ -86,8 +86,7 @@ public class FileReadActivity extends Activity {
             case R.id.prev:
                 if((str = braille.prevBraille())==null){
                     try {
-                        org
-                                = fp.readFile(PREV);
+                        org = fp.readFile(PREV);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -101,13 +100,15 @@ public class FileReadActivity extends Activity {
                 if (!(braille.isListEmpty())) {
                     braille.setCurrentIndexToZero();
                     str = braille.nextBraille();
+                    fp.setInitNumRead();
                 } else {
+                    try {
+                        org = fp.readFile(NEXT);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     str = braille.toBraille(org);
-                }
-                try {
-                    org = fp.readFile(NEXT);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
                 break;
 
