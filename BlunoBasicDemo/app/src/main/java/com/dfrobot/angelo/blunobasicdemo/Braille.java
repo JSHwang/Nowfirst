@@ -2,6 +2,8 @@ package com.dfrobot.angelo.blunobasicdemo;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class Braille {
     private final int ASCII_0 = 48;
     private final int ASCII_9 = 57;
@@ -58,16 +60,28 @@ public class Braille {
 
     String data;                              // 점자 데이터
     String bytedata;                         // byte string으로 변환
+    ArrayList<String> read_list;             // 먼저 읽었던 데이터 저장용
+    int current_index;
+
+    private boolean number_reading;         // 지금 숫자를 읽는 중
+    private boolean capital_continue;       // 지금 대문자가 연속으로 등장하는 중
+    private boolean doublequote_using;      // 지금 쌍따옴표 사용 중
+    private boolean singlequote_using;      // 지금 따옴표 사용 중
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Braille(){
         data = "";
         bytedata = "";
-    }
 
-    Braille(String s) {                       // constructor
-        makeBraille(s);
+        number_reading = false;
+        capital_continue = false;
+        doublequote_using = false;
+        singlequote_using = false;
+
+        read_list = new ArrayList<String>();
+
+        current_index = -1;
     }
 
     String toBraille(String s) {
@@ -75,13 +89,22 @@ public class Braille {
         return bytedata;
     }
 
+    String prevBraille() {
+        if (current_index > 0) current_index--;
+        else current_index = 0;
+        return read_list.get(current_index);
+    }
+
+    String nextBraille() {
+        if (current_index+1 < read_list.size()) {
+            current_index++;
+            return read_list.get(current_index);
+        } else return null;
+    }
+
     private void makeBraille (String s) {
         data=""; bytedata=""; // initialize
         int length = s.length();
-        boolean number_reading = false; // 지금 숫자를 읽는 중
-        boolean capital_continue = false; // 지금 대문자가 연속으로 등장하는 중
-        boolean doublequote_using = false; // 지금 쌍따옴표 사용 중
-        boolean singlequote_using = false; // 지금 따옴표 사용 중
 
         for (int i=0; i<length; i++) {
             int ascii = (int)(s.charAt(i));
@@ -210,7 +233,10 @@ public class Braille {
             bytedata = bytedata.concat(Character.toString(chtem));
         }
         Log.d("Braille", "bytedata: "+bytedata);
-    }
+
+        read_list.add(bytedata);
+        current_index++;
+    } // makeBraille end
 
     public String getString() {              // 점자 데이터를 binary string으로 변환
         return data;
