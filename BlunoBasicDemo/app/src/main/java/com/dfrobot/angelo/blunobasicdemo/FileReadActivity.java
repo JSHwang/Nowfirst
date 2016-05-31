@@ -127,19 +127,25 @@ public class FileReadActivity extends Activity {
         switch (sign){
             case INIT:
                 fp.initFilePointer();
-                braille.setCurrentIndexToZero();
-                sign = NEXT;
-                try {
-                    org = fp.readFile(sign);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (!(braille.isListEmpty())) {
+                    braille.setCurrentIndexToZero();
+                    str = braille.nextBraille();
+                    fp.setInitNumRead();
+                } else {
+                    try {
+                        org = fp.readFile(NEXT);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    str = braille.toBraille(org);
                 }
-                str = braille.toBraille(org);
                 break;
+
             case PREV:
                 if((str = braille.prevBraille())==null){
                     try {
-                        org = fp.readFile(sign);
+                        org = fp.readFile(PREV);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -148,10 +154,11 @@ public class FileReadActivity extends Activity {
                     fp.setPrevNumRead();
                 }
                 break;
+
             case NEXT:
                 if((str = braille.nextBraille()) == null){
                     try {
-                        org = fp.readFile(sign);
+                        org = fp.readFile(NEXT);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -160,6 +167,7 @@ public class FileReadActivity extends Activity {
                     fp.setNextNumRead();
                 }
                 break;
+
         }
 
         str = sendText(str);
