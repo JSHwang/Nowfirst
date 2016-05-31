@@ -98,13 +98,17 @@ public class FileReadActivity extends Activity {
                 break;
             case R.id.init:
                 fp.initFilePointer();
-                braille.setCurrentIndexToZero();
+                if (!(braille.isListEmpty())) {
+                    braille.setCurrentIndexToZero();
+                    str = braille.nextBraille();
+                } else {
+                    str = braille.toBraille(org);
+                }
                 try {
                     org = fp.readFile(NEXT);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                str = braille.toBraille(org);
                 break;
 
         }
