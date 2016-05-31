@@ -107,6 +107,11 @@ public class Braille {
         current_index = -1;
     }
 
+    boolean isListEmpty() {
+        if (read_list.size()==0) return true;
+        else return false;
+    }
+
     private void makeBraille (String s) {
         data=""; bytedata=""; // initialize
         int length = s.length();
