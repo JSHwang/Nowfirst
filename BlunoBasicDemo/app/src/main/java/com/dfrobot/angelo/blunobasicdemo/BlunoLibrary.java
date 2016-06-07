@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public abstract  class BlunoLibrary  extends Activity{
+public abstract  class BlunoLibrary  extends Activity  {
 
 	private Context mainContext=this;
 
@@ -40,6 +41,7 @@ public abstract  class BlunoLibrary  extends Activity{
 //	}
 
 	public abstract void onConectionStateChange(connectionStateEnum theconnectionStateEnum);
+	public abstract void callTTS();
 	public abstract void onSerialReceived(String theString);
 	public static void serialSend(String theString){
 		if (mConnectionState == connectionStateEnum.isConnected) {
@@ -200,6 +202,7 @@ public abstract  class BlunoLibrary  extends Activity{
 		// permission to enable it.
 		if (!mBluetoothAdapter.isEnabled()) {
 			if (!mBluetoothAdapter.isEnabled()) {
+				callTTS();
 				Intent enableBtIntent = new Intent(
 						BluetoothAdapter.ACTION_REQUEST_ENABLE);
 				((Activity) mainContext).startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);

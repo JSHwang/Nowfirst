@@ -9,12 +9,14 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 public class FileListActivity extends FragmentActivity implements TextToSpeech.OnInitListener {
@@ -27,6 +29,15 @@ public class FileListActivity extends FragmentActivity implements TextToSpeech.O
     ArrayList<String> fileNameList;
 
     @Override
+    public void onInit(int status) {
+        Log.d("FileListActivity", "OnInit");
+        if (status == TextToSpeech.SUCCESS) {
+            Log.d("FileListActivity","TTS setLanguage");
+            TTS.setLanguage(Locale.KOREAN);
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
@@ -37,6 +48,7 @@ public class FileListActivity extends FragmentActivity implements TextToSpeech.O
 
         fileNameList = new ArrayList<String>();
         TTS = new TextToSpeech(this,this);
+        TTS.setLanguage(Locale.KOREAN);
 
         int length = adapter.getCount();
         for (int i=0; i<length; i++) {
@@ -73,11 +85,6 @@ public class FileListActivity extends FragmentActivity implements TextToSpeech.O
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
-
-    }
-
-    @Override
-    public void onInit(int status) {
 
     }
 
