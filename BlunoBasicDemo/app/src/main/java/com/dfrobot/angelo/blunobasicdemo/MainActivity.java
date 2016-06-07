@@ -75,8 +75,14 @@ public class MainActivity extends BlunoLibrary implements TextToSpeech.OnInitLis
 		btnConnectDisconnect.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (!GlobalData.getSilence() && !TTS.isSpeaking())
-					TTS.speak("블루투스 연결을 시작합니다.", TextToSpeech.QUEUE_ADD, null);
+				if (!GlobalData.getSilence() && !TTS.isSpeaking()) {
+					if (btnConnectDisconnect.getText().toString()=="Connect") {
+						TTS.speak("블루투스 연결을 시작합니다.", TextToSpeech.QUEUE_ADD, null);
+					}
+					else if(btnConnectDisconnect.getText().toString()=="Disconnect") {
+						TTS.speak("블루투스 연결을 종료합니다.", TextToSpeech.QUEUE_ADD, null);
+					}
+				}
 				buttonScanOnClickProcess();
 			}
 		});
@@ -88,6 +94,7 @@ public class MainActivity extends BlunoLibrary implements TextToSpeech.OnInitLis
 				GlobalData.switchSilence();
 				if(GlobalData.getSilence()){
 					//무음
+					if (!TTS.isSpeaking()) TTS.speak("음성을 비활성화합니다.", TextToSpeech.QUEUE_ADD, null);
 					BtnSilence.setIconResource("\uf028");
 					BtnSilence.setBackgroundColor(Color.parseColor("#af0029"));
 					BtnSilence.setFocusBackgroundColor(Color.parseColor("#d6112f"));

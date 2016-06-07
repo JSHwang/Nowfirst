@@ -14,7 +14,7 @@ public class FilePointer {
     private static long now = 0;
     public static String nowStr = "";
 
-    public static int NUM_READ = 3;
+    public static int NUM_READ = 6;
 
 
     //경로의 파일 열기
