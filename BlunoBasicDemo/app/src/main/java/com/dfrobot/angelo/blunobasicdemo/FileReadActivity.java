@@ -52,6 +52,7 @@ public class FileReadActivity extends Activity {
 
         braille = new Braille();
 
+        setFilePointer(INIT);
     }
 
     @Override
@@ -74,6 +75,10 @@ public class FileReadActivity extends Activity {
                 if((str = braille.nextBraille()) == null){
                     try {
                         org = fp.readFile(NEXT);
+                        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                        listAdapter.add("[" + currentDateTimeString + "] OR: " + " " + org);
+                        messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -87,6 +92,10 @@ public class FileReadActivity extends Activity {
                 if((str = braille.prevBraille())==null){
                     try {
                         org = fp.readFile(PREV);
+                        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                        listAdapter.add("[" + currentDateTimeString + "] OR: " + " " + org);
+                        messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -104,6 +113,10 @@ public class FileReadActivity extends Activity {
                 } else {
                     try {
                         org = fp.readFile(NEXT);
+                        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                        listAdapter.add("[" + currentDateTimeString + "] OR: " + " " + org);
+                        messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -134,6 +147,9 @@ public class FileReadActivity extends Activity {
                 } else {
                     try {
                         org = fp.readFile(NEXT);
+                        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                        listAdapter.add("[" + currentDateTimeString + "] OR: " + " " + org);
+                        messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -146,6 +162,10 @@ public class FileReadActivity extends Activity {
                 if((str = braille.prevBraille())==null){
                     try {
                         org = fp.readFile(PREV);
+                        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                        listAdapter.add("[" + currentDateTimeString + "] OR: " + " " + org);
+                        messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -159,6 +179,10 @@ public class FileReadActivity extends Activity {
                 if((str = braille.nextBraille()) == null){
                     try {
                         org = fp.readFile(NEXT);
+
+                        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                        listAdapter.add("[" + currentDateTimeString + "] OR: " + " " + org);
+                        messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -169,6 +193,7 @@ public class FileReadActivity extends Activity {
                 break;
 
         }
+
 
         str = sendText(str);
         Log.d("FileReadActivity", sign + org);
